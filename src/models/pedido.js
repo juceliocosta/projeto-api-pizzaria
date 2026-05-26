@@ -14,5 +14,9 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    observacao: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   });
 };

@@ -14,6 +14,10 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    endereco: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     tipo_usuario: {
       type: DataTypes.STRING,
       allowNull: false,

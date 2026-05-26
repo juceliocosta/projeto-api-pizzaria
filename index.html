@@ -3,51 +3,114 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Integração com API de Livros</title>
+  <title>Integração com API de Pizzaria</title>
 </head>
 <body>
-  <h1>Integração com API de Livros</h1>
-  <button id="loginBtn">Login</button>
-  <button id="getLivrosBtn">Obter Livros</button>
+  <h1>Integração com API de Pizzaria</h1>
+
+  <h2>Register</h2>
+  <form id="registerForm">
+    <input type="email" id="registerEmail" placeholder="Email" required />
+    <input
+      type="password"
+      id="registerPassword"
+      placeholder="Password"
+      required
+    />
+    <button type="submit">Register</button>
+  </form>
+
+  <h2>Login</h2>
+  <form id="loginForm" method="post">
+    <input type="email" id="loginEmail" placeholder="Email" required />
+    <input
+      type="password"
+      id="loginPassword"
+      placeholder="Password"
+      required
+    />
+    <button type="submit">Login</button>
+  </form>
+
+  <h2>Cardápio</h2>
+  <ul id="produtosList"></ul>
+
+
   <script>
-    let token = '';
-
-    document.getElementById('loginBtn').addEventListener('click', async () => {
-      console.log('Login button clicked');
-      const response = await fetch('/login', { // Atualiza o URL para o mesmo domínio
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'admin@livraria.com', password: '123456' }),
-      });
-      if (response.ok) {
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("registerEmail").value;
+        const password = document.getElementById("registerPassword").value;
+        const response = await fetch("/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
         const data = await response.json();
-        token = data.token;
-        console.log('Token recebido:', token);
-        alert('Login realizado com sucesso!');
-      } else {
-        console.error('Erro no login:', response.statusText);
-        alert('Erro no login. Verifique as credenciais.');
+        if (response.ok) {
+          alert(data.message);
+        } else {
+          alert(data.error);
+        }
+      });
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        loading(true);
+        const email = document.getElementById("loginEmail").value;
+        const password = document.getElementById("loginPassword").value;
+        const response = await fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          localStorage.setItem("token", data.token);
+          alert(data.message);
+        } else {
+          alert(data.error);
+        }
+        loading(false);
+      });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const produtosList = document.getElementById('produtosList');
+      try {
+        const response = await fetch('/produtos');
+        if (response.ok) {
+          const produtos = await response.json();
+          produtos.forEach(produto => {
+            const li = document.createElement('li');
+            li.textContent = `${produto.nome} - R$${produto.preco}`;
+            produtosList.appendChild(li);
+          });
+        } else {
+          console.error('Erro ao obter cardápio:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Erro do servidor:', error);
       }
     });
 
-    document.getElementById('getLivrosBtn').addEventListener('click', async () => {
-      console.log('Get Livros button clicked');
-      if (!token) {
-        alert('Faça login primeiro!');
-        return;
-      }
-      const response = await fetch('/livros', { // Atualiza o URL para o mesmo domínio
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.ok) {
-        const livros = await response.json();
-        console.log(livros);
-        alert('Livros obtidos com sucesso! Verifique o console para mais detalhes.');
-      } else {
-        console.error('Erro ao obter livros:', response.statusText);
-        alert('Erro ao obter livros.');
-      }
-    });
+    // document.getElementById('getCardapioBtn').addEventListener('click', async () => {
+    //   console.log('Get Cardápio button clicked');
+    //   if (!token) {
+    //     alert('Faça login primeiro!');
+    //     return;
+    //   }
+    //   const response = await fetch('/produtos', { // Atualiza o URL para o mesmo domínio
+    //     headers: { Authorization: `Bearer ${token}` },
+    //   });
+    //   if (response.ok) {
+    //     const cardapio = await response.json();
+    //     console.log(cardapio);
+    //     alert('Cardápio obtido com sucesso! Verifique o console para mais detalhes.');
+    //   } else {
+    //     console.error('Erro ao obter cardápio:', response.statusText);
+    //     alert('Erro ao obter cardápio.');
+    //   }
+    // });
   </script>
 </body>
 </html>

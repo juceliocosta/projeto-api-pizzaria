@@ -6,6 +6,8 @@ const swaggerOptions = require('./src/config/swagger');
 const cors = require('cors');
 const corsOptions = require('./src/config/cors');
 
+const { sequelize } = require('./src/models');
+
 const app = express();
 app.use(express.json());
 
@@ -18,7 +20,23 @@ app.use((req, res, next) => {
   next();
 });
 
+
 const PORT = process.env.PORT || 3000;
+
+// Sincronizar banco antes de iniciar o servidor
+sequelize.sync()
+  .then(() => {
+    console.log('Sequelize: sincronização concluída, banco pronto.');
+    app.listen(PORT, () => {
+      console.log(`Servidor rodando na porta ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Erro ao sincronizar o banco:', err);
+    process.exit(1);
+  });
+
+// Remover o app.listen antigo, pois agora está dentro do then acima
 
 // Swagger setup
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOptions));
@@ -27,7 +45,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOptions));
 app.post('/login', (req, res) => {
      const { email, password } = req.body;
      // Simulação de validação (substituir pelo banco em casos reais)
-     if (email === 'admin@livraria.com' && password === '123456') {
+     if (email === 'admin@pizzaria.com' && password === '123456') {
        const token = jwt.sign({ email, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
        return res.json({ token });
      }
@@ -43,10 +61,3 @@ app.get('/', (req, res) => {
 });
 
 
-// Rotas
-const livrosRouter = require('./src/routes/livros');
-app.use('/livros', livrosRouter);
-
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});

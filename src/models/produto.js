@@ -10,5 +10,17 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    nome_variacao: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    descricao: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    preco: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   });
 };
