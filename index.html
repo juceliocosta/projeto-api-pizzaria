@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Integração com API de Livros</title>
+</head>
+<body>
+  <h1>Integração com API de Livros</h1>
+  <button id="loginBtn">Login</button>
+  <button id="getLivrosBtn">Obter Livros</button>
+  <script>
+    let token = '';
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      console.log('Login button clicked');
+      const response = await fetch('/login', { // Atualiza o URL para o mesmo domínio
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'admin@livraria.com', password: '123456' }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        token = data.token;
+        console.log('Token recebido:', token);
+        alert('Login realizado com sucesso!');
+      } else {
+        console.error('Erro no login:', response.statusText);
+        alert('Erro no login. Verifique as credenciais.');
+      }
+    });
+
+    document.getElementById('getLivrosBtn').addEventListener('click', async () => {
+      console.log('Get Livros button clicked');
+      if (!token) {
+        alert('Faça login primeiro!');
+        return;
+      }
+      const response = await fetch('/livros', { // Atualiza o URL para o mesmo domínio
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const livros = await response.json();
+        console.log(livros);
+        alert('Livros obtidos com sucesso! Verifique o console para mais detalhes.');
+      } else {
+        console.error('Erro ao obter livros:', response.statusText);
+        alert('Erro ao obter livros.');
+      }
+    });
+  </script>
+</body>
+</html>
