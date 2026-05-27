@@ -6,5 +6,6 @@ usuariosRoutes.post('/', usuarios.criarUsuario);
 usuariosRoutes.get('/', usuarios.obterUsuarios);
 usuariosRoutes.put('/:id', usuarios.atualizarUsuarioPorID);
 usuariosRoutes.delete('/:id', usuarios.deletarUsuarioPorID);
+usuariosRoutes.post('/login', usuarios.logarUsuario);
 
 module.exports = usuariosRoutes;
