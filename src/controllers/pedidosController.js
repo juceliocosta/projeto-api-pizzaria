@@ -1,4 +1,4 @@
-const { Pedido, Produto } = require('../models');
+const { Pedido, Produto, Usuario } = require('../models');
 
 const criarPedido = async (req, res) => {
   try {
@@ -6,6 +6,22 @@ const criarPedido = async (req, res) => {
     if (!usuario_id) {
       return res.status(404).json({ error: 'O ID do usuário é obrigatório.' });
     }
+    // verifica se o usuário existe
+    const usuario = await Usuario.findByPk(usuario_id);
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuário não encontrado.' });
+    }
+    
+    if (usuario.id != req.usuario.payload.id) {
+      return res.status(403).json({ error: 'Sem permissão.' });
+    }
+
+    // verifica se o pedido vinculado ao usuário existe
+    const pedidoExistente = await Pedido.findOne({ where: { usuario_id } });
+    if (pedidoExistente) {
+      return res.status(400).json({ error: 'O usuário já possui um pedido em andamento.' });
+    }
+
     const pedido = await Pedido.create(
       { 
         usuario_id, 
@@ -35,12 +51,12 @@ const obterPedidos = async (req, res) => {
 const atualizarPedidoPorID = async (req, res) => {
   try {
     const { id } = req.params;
-    const { usuario_id, produto_id, quantidade, valor_total } = req.body;
+    const { status_entrega, status_pagamento, valor_total, observacao } = req.body;
     const pedido = await Pedido.findByPk(id);
     if (!pedido) {
       return res.status(404).json({ error: 'Pedido não encontrado.' });
     }
-    await pedido.update({ usuario_id, produto_id, quantidade, valor_total });
+    await pedido.update({ status_entrega, status_pagamento, valor_total, observacao });
     return res.json(pedido);
   } catch (error) {
     console.error(error);
@@ -90,11 +106,11 @@ const adicionarProdutoAoPedido = async (req, res) => {
   }
 };
 
-const listarProdutosDoPedido = async (req, res) => {
+const listarProdutosDoPedidoPorID = async (req, res) => {
   try {
-    const { pedido_id } = req.params;
+    const { id } = req.params;
 
-    const pedido = await Pedido.findByPk(pedido_id, {
+    const pedido = await Pedido.findByPk(id, {
       include: Produto
     });
     if (!pedido) {
@@ -109,7 +125,7 @@ const listarProdutosDoPedido = async (req, res) => {
   }
 };
 
-const removerProdutoDoPedido = async (req, res) => {
+const removerProdutoDoPedidoPorID = async (req, res) => {
   try {
     const { pedidoId, produtoId } = req.body; // Ou req.params, dependendo da sua rota
 
@@ -143,6 +159,6 @@ module.exports = {
   atualizarPedidoPorID,
   deletarPedidoPorID,
   adicionarProdutoAoPedido,
-  listarProdutosDoPedido,
-  removerProdutoDoPedido
+  listarProdutosDoPedidoPorID,
+  removerProdutoDoPedidoPorID
 };
