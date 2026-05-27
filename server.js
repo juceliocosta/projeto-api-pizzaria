@@ -5,11 +5,13 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerOptions = require('./src/config/swagger');
 const cors = require('cors');
 const corsOptions = require('./src/config/cors');
+const routes = require('./src/routes');
 
 const { sequelize } = require('./src/models');
 
 const app = express();
 app.use(express.json());
+app.use(routes);
 
 // Responder a preflight requests
 app.use(cors(corsOptions));
