@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const { Usuario } = require('../models');
 
 const criarUsuario = async (req, res) => {
@@ -59,7 +59,8 @@ const atualizarUsuarioPorID = async (req, res) => {
     const senhaCriptografada = await bcrypt.hash(senha, salt);
     
     await usuario.update({ nome, email, senha: senhaCriptografada, endereco });
-    return res.json(usuario);
+    const { senha: _, ...usuarioSemSenha } = usuario.toJSON();
+    return res.json(usuarioSemSenha);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Erro ao atualizar usuário.' });
