@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const { Pedido, Produto, Usuario } = require('../models');
 
 const criarPedido = async (req, res) => {
@@ -38,9 +39,9 @@ const criarPedido = async (req, res) => {
   }
 };
 
-const obterPedidos = async (req, res) => {
+const obterPedidosPorID = async (req, res) => {
   try {
-    const pedidos = await Pedido.findAll();
+    const pedidos = await Pedido.findAll({ where: { usuario_id: req.usuario.payload.id } });
     return res.json(pedidos);
   } catch (error) {
     console.error(error);
@@ -127,7 +128,7 @@ const listarProdutosDoPedidoPorID = async (req, res) => {
 
 const removerProdutoDoPedidoPorID = async (req, res) => {
   try {
-    const { pedidoId, produtoId } = req.body; // Ou req.params, dependendo da sua rota
+    const { pedidoId, produtoId } = req.body;
 
     // 1. Busca o pedido
     const pedido = await Pedido.findByPk(pedidoId);
@@ -154,7 +155,7 @@ const removerProdutoDoPedidoPorID = async (req, res) => {
 
 
 module.exports = {
-  obterPedidos,
+  obterPedidosPorID,
   criarPedido,
   atualizarPedidoPorID,
   deletarPedidoPorID,
