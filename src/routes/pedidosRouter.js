@@ -4,7 +4,7 @@ const pedidos = require('../controllers/pedidosController');
 const { autenticarJWT } = require('../middlewares/autenticacao');
 
 pedidosRoutes.post('/', autenticarJWT, pedidos.criarPedido);
-pedidosRoutes.get('/', autenticarJWT, pedidos.obterPedidos);
+pedidosRoutes.get('/', autenticarJWT, pedidos.obterPedidosPorID);
 pedidosRoutes.put('/:id', autenticarJWT, pedidos.atualizarPedidoPorID);
 pedidosRoutes.delete('/:id', autenticarJWT, pedidos.deletarPedidoPorID);
 pedidosRoutes.post('/produtos', autenticarJWT, pedidos.adicionarProdutoAoPedido);
