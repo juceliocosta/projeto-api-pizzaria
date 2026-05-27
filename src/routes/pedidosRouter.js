@@ -1,12 +1,13 @@
 const express = require('express');
-const router = express.Router();
+const pedidosRoutes = express.Router();
+const pedidos = require('../controllers/pedidosController');
 
-// router.get('/pedidos', pedidosController);
-// router.post('/pedidos', criarPedidoController);
-// router.get('/pedidos/:id', obterPedidoController);
-// router.put('/pedidos/:id', atualizarPedidoController);
-// router.delete('/pedidos/:id', cancelarPedidoController);
-// router.post('/pedidos/enderecos', registrarEnderecoPedidoController);
-// router.post('/pedidos/:id/pagar', pagarPedidoController);
+pedidosRoutes.post('/', pedidos.criarPedido);
+pedidosRoutes.get('/', pedidos.obterPedidos);
+pedidosRoutes.put('/:id', pedidos.atualizarPedidoPorID);
+pedidosRoutes.delete('/:id', pedidos.deletarPedidoPorID);
+pedidosRoutes.post('/:id/produtos', pedidos.adicionarProdutoAoPedido);
+pedidosRoutes.get('/:id/produtos', pedidos.listarProdutosDoPedido);
+pedidosRoutes.delete('/:id/produtos/:produtoId', pedidos.removerProdutoDoPedido);
 
-module.exports = router;
+module.exports = pedidosRoutes;
