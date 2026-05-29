@@ -10,11 +10,13 @@ const routes = require('./src/routes');
 const { sequelize } = require('./src/models');
 
 const app = express();
-app.use(express.json());
-app.use(routes);
 
 // Responder a preflight requests
 app.use(cors(corsOptions));
+app.use(express.json());
+
+app.use(routes);
+
 
 // Middleware para log de requisições
 app.use((req, res, next) => {
