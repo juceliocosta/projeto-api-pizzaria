@@ -21,7 +21,7 @@ try {
 
   const tipo_usuario = 'Cliente';
   const novoUsuario = await Usuario.create({
-    nome, email, senha: senhaCriptografada, endereco, tipo_usuario: tipo_usuario
+    nome, email, senha: senhaCriptografada, endereco: endereco || "", tipo_usuario: tipo_usuario
   });
 
   return res.status(201).json({ message: 'Usuário cadastrado com sucesso!'});
@@ -92,10 +92,12 @@ const logarUsuario = async (req, res) => {
     }
 
     const usuario = await Usuario.findOne({ where: { email } });
-    const senhaValida = await bcrypt.compare(senha, usuario.senha);
+    
     if (!usuario || !senhaValida) {
       return res.status(401).json({ error: 'Credenciais inválidas.' });
     }
+    
+    const senhaValida = await bcrypt.compare(senha, usuario.senha);
 
     const payload = {
       id: usuario.id,            
