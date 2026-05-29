@@ -93,11 +93,13 @@ const logarUsuario = async (req, res) => {
 
     const usuario = await Usuario.findOne({ where: { email } });
     
+    // Verifica se o usuário existe e se a senha é válida
+    const senhaValida = usuario ? await bcrypt.compare(senha, usuario.senha) : false;
+
     if (!usuario || !senhaValida) {
       return res.status(401).json({ error: 'Credenciais inválidas.' });
     }
     
-    const senhaValida = await bcrypt.compare(senha, usuario.senha);
 
     const payload = {
       id: usuario.id,            
