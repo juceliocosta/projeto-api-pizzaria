@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { Usuario } = require('../models');
+const { Usuario, Pedido } = require('../models');
 
 const criarUsuario = async (req, res) => {
 try {
@@ -107,6 +107,20 @@ const logarUsuario = async (req, res) => {
       role: 'Cliente'
     };
     const token = jwt.sign({ payload }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // verifica se o pedido vinculado ao usuário existe
+    const pedidoExistente = await Pedido.findOne({ where: { usuario_id: usuario.id } });
+    if (!pedidoExistente) {
+      await Pedido.create(
+        { 
+          usuario_id: usuario.id, 
+          status_entrega: 'pendente', 
+          status_pagamento: 'pendente', 
+          valor_total: 0,
+          observacao: "" 
+        }
+      );
+    }
 
     return res.status(200).json({
       token,

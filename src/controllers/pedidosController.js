@@ -1,5 +1,5 @@
 const { where } = require('sequelize');
-const { Pedido, Produto, Usuario } = require('../models');
+const { Pedido, Produto, Usuario, PedidoProduto } = require('../models');
 
 const criarPedido = async (req, res) => {
   try {
@@ -49,6 +49,16 @@ const obterPedidosPorID = async (req, res) => {
   }
 };
 
+const obterPedidos = async (req, res) => {
+  try {
+    const pedidos = await Pedido.findAll();
+    return res.json(pedidos);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro ao obter pedidos do banco de dados.' });
+  }
+};
+
 const atualizarPedidoPorID = async (req, res) => {
   try {
     const { id } = req.params;
@@ -82,11 +92,12 @@ const deletarPedidoPorID = async (req, res) => {
 
 const adicionarProdutoAoPedido = async (req, res) => {
   try {
-    const { pedido_id, produto_id, quantidade } = req.body;
-
-    const pedido = await Pedido.findByPk(pedido_id);
+    const usuario_id = req.usuario.payload.id;
+    const { produto_id, quantidade } = req.body;
+    // Verifica se o pedido pertence ao usuário logado
+    const pedido = await Pedido.findOne({ where: { usuario_id } });
     if (!pedido) {
-      return res.status(404).json({ error: 'Pedido não encontrado.' });
+      return res.status(404).json({ error: 'Pedido do usuário não encontrado.' });
     }
 
     const produto = await Produto.findByPk(produto_id);
@@ -94,10 +105,20 @@ const adicionarProdutoAoPedido = async (req, res) => {
       return res.status(404).json({ error: 'Produto não encontrado.' });
     }
 
-    // Associa o produto ao pedido passando dados extras para a tabela pivô
-    await pedido.addProduto(produto, {
-      through: { quantidade: quantidade || 1 }
+    const item = await PedidoProduto.findOne({
+      where: { pedido_id: pedido.id, produto_id: produto.id }
     });
+
+    if (item) {
+      item.quantidade += 1;
+      await item.save();
+    } else {
+      await PedidoProduto.create({
+        pedido_id: pedido.id,
+        produto_id: produto.id,
+        quantidade: quantidade || 1
+      });
+    }
 
     return res.status(201).json({ message: 'Produto adicionado ao pedido com sucesso!' });
 
@@ -107,10 +128,9 @@ const adicionarProdutoAoPedido = async (req, res) => {
   }
 };
 
-const listarProdutosDoPedidoPorID = async (req, res) => {
+const listarProdutosPedidos = async (req, res) => {
   try {
     const { id } = req.params;
-
     const pedido = await Pedido.findByPk(id, {
       include: Produto
     });
@@ -126,40 +146,74 @@ const listarProdutosDoPedidoPorID = async (req, res) => {
   }
 };
 
-const removerProdutoDoPedidoPorID = async (req, res) => {
+const listarProdutosDoPedidoDoUsuario = async (req, res) => {
   try {
-    const { pedidoId, produtoId } = req.body;
+    const usuario_id = req.usuario.payload.id;
+    const pedido = await Pedido.findOne({
+      where: { usuario_id },
+      include: {
+        model: Produto,
+        through: { attributes: ['quantidade'] }
+      }
+    });
 
-    // 1. Busca o pedido
-    const pedido = await Pedido.findByPk(pedidoId);
     if (!pedido) {
-      return res.status(404).json({ error: 'Pedido não encontrado.' });
+      return res.status(404).json({
+        error: 'Pedido do usuário não encontrado.'
+      });
+    }
+    return res.json(pedido.Produtos);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro ao listar produtos do pedido.' });
+  }
+};
+
+const removerProdutoDoPedido = async (req, res) => {
+try {
+    const usuario_id = req.usuario.payload.id;
+    const { id } = req.params;
+    console.log('ID do produto a remover:', id);
+    // Verifica se o pedido pertence ao usuário logado
+    const pedido = await Pedido.findOne({ where: { usuario_id } });
+    if (!pedido) {
+      return res.status(404).json({ error: 'Pedido do usuário não encontrado.' });
     }
 
-    // 2. Busca o produto
-    const produto = await Produto.findByPk(produtoId);
+    const produto = await Produto.findByPk(id);
     if (!produto) {
       return res.status(404).json({ error: 'Produto não encontrado.' });
     }
 
-    // 3. Remove a relação na tabela pivô
-    await pedido.removeProduto(produto);
+    const item = await PedidoProduto.findOne({
+      where: { pedido_id: pedido.id, produto_id: produto.id }
+    });
 
-    return res.status(200).json({ message: 'Produto removido do pedido com sucesso!' });
+    if (item.quantidade > 1) {
+      item.quantidade -= 1;
+      await item.save();
+    } else {
+      await item.destroy();
+    } 
+
+    return res.status(201).json({ message: 'Produto removido do pedido com sucesso!' });
 
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Erro interno ao remover produto do pedido.' });
+    return res.status(500).json({ error: 'Erro ao remover produto do pedido.' });
   }
 };
 
 
 module.exports = {
   obterPedidosPorID,
+  obterPedidos,
   criarPedido,
   atualizarPedidoPorID,
   deletarPedidoPorID,
   adicionarProdutoAoPedido,
-  listarProdutosDoPedidoPorID,
-  removerProdutoDoPedidoPorID
+  listarProdutosPedidos,
+  listarProdutosDoPedidoDoUsuario,
+  removerProdutoDoPedido
 };
