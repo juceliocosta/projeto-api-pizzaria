@@ -104,7 +104,7 @@ const logarUsuario = async (req, res) => {
     const payload = {
       id: usuario.id,            
       email: usuario.email,      
-      role: 'Cliente'
+      role: usuario.tipo_usuario
     };
     const token = jwt.sign({ payload }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
