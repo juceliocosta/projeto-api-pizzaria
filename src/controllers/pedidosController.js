@@ -1,4 +1,4 @@
-const { where } = require('sequelize');
+//const { where } = require('sequelize');
 const { Pedido, Produto, Usuario, PedidoProduto } = require('../models');
 
 const criarPedido = async (req, res) => {
@@ -39,13 +39,34 @@ const criarPedido = async (req, res) => {
   }
 };
 
-const obterPedidosPorID = async (req, res) => {
+const obterPedidoDoUsuario = async (req, res) => {
   try {
-    const pedidos = await Pedido.findAll({ where: { usuario_id: req.usuario.payload.id } });
-    return res.json(pedidos);
+    const usuario_id = req.usuario.payload.id;
+    const pedido = await Pedido.findOne({
+      where: { usuario_id },
+      include: [{
+        model: Produto,
+        through: { attributes: ['quantidade'] }
+      }]
+    });
+
+    if (!pedido) {
+      return res.status(404).json({ error: 'Pedido do usuário não encontrado.' });
+    }
+    
+    let valor_total = 0;
+    for (const produto of pedido.Produtos) {
+      const quantidade = produto.PedidoProduto.quantidade;
+      valor_total += produto.preco * quantidade;
+    }
+
+    pedido.valor_total = valor_total;
+    await pedido.save();
+
+    return res.json(pedido);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Erro ao obter pedidos do banco de dados.' });
+    return res.status(500).json({ error: 'Erro ao obter pedido do banco de dados.' });
   }
 };
 
@@ -146,32 +167,8 @@ const listarProdutosPedidos = async (req, res) => {
   }
 };
 
-const listarProdutosDoPedidoDoUsuario = async (req, res) => {
-  try {
-    const usuario_id = req.usuario.payload.id;
-    const pedido = await Pedido.findOne({
-      where: { usuario_id },
-      include: {
-        model: Produto,
-        through: { attributes: ['quantidade'] }
-      }
-    });
-
-    if (!pedido) {
-      return res.status(404).json({
-        error: 'Pedido do usuário não encontrado.'
-      });
-    }
-    return res.json(pedido.Produtos);
-
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Erro ao listar produtos do pedido.' });
-  }
-};
-
 const removerProdutoDoPedido = async (req, res) => {
-try {
+  try {
     const usuario_id = req.usuario.payload.id;
     const { id } = req.params;
     console.log('ID do produto a remover:', id);
@@ -207,13 +204,12 @@ try {
 
 
 module.exports = {
-  obterPedidosPorID,
+  obterPedidoDoUsuario,
   obterPedidos,
   criarPedido,
   atualizarPedidoPorID,
   deletarPedidoPorID,
   adicionarProdutoAoPedido,
   listarProdutosPedidos,
-  listarProdutosDoPedidoDoUsuario,
   removerProdutoDoPedido
 };

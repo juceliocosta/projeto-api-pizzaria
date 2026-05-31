@@ -1,3 +1,4 @@
+const { criarAdminInicial } = require('../config/adminSetup');
 const { Sequelize } = require('sequelize');
 const sequelize = new Sequelize(
   { 
@@ -26,6 +27,7 @@ Produto.belongsToMany(Pedido, { through: PedidoProduto, foreignKey: 'produto_id'
 
 (async () => {
   await sequelize.sync();
+  await criarAdminInicial(Usuario);
 })();
 
 module.exports = {
