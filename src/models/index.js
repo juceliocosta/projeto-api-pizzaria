@@ -1,12 +1,4 @@
-const { criarAdminInicial } = require('../config/adminSetup');
-const { Sequelize } = require('sequelize');
-const sequelize = new Sequelize(
-  { 
-    dialect: process.env.DB_DIALECT,
-    storage: "pizzalab.sqlite", // Para SQLite
-  }
-);
-
+const sequelize = require('../config/database');
 
 // execução de função imediata IIFE
 const Produto = require('./produto')(sequelize);
@@ -24,11 +16,6 @@ Pedido.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'Cliente' });
 Pedido.belongsToMany(Produto, { through: PedidoProduto, foreignKey: 'pedido_id' });
 Produto.belongsToMany(Pedido, { through: PedidoProduto, foreignKey: 'produto_id' });
 
-
-(async () => {
-  await sequelize.sync();
-  await criarAdminInicial(Usuario);
-})();
 
 module.exports = {
   sequelize,
