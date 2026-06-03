@@ -36,13 +36,13 @@ API desenvolvida para gerenciar uma pizzaria, permitindo o cadastro de usuários
 - `DELETE /usuarios/:id` — Remover usuário
 - `POST /usuarios/login` — Login do usuário (retorna token JWT)
 
-### Produtos
+### Produtos 
 - `POST /produtos` — Cadastrar novo produto
 - `GET /produtos` — Listar produtos
 - `PUT /produtos/:id` — Atualizar produto
 - `DELETE /produtos/:id` — Remover produto
 
-### Pedidos (requer autenticação JWT)
+### Pedidos
 - `POST /pedidos` — Criar novo pedido
 - `GET /pedidos` — Listar pedidos do usuário autenticado
 - `PUT /pedidos/:id` — Atualizar pedido

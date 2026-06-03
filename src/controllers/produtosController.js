@@ -14,7 +14,7 @@ const criarProduto = async (req, res) => {
 const obterProdutos = async (req, res) => {
   try {
     const produtos = await Produto.findAll();
-    return res.json(produtos);
+    return res.status(200).json(produtos);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Erro ao obter produtos do banco de dados.' });
@@ -26,7 +26,7 @@ const obterProdutoPorID = async (req, res) => {
     const { id } = req.params;
     const produto = await Produto.findOne({ where: { id }});
     
-    return res.json(produto);
+    return res.status(200).json(produto);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Erro ao obter produto do banco de dados.' });
@@ -42,7 +42,7 @@ const atualizarProdutoPorID = async (req, res) => {
       return res.status(404).json({ error: 'Produto não encontrado.' });
     }
     await produto.update({ nome, categoria, nome_variacao, descricao, preco });
-    return res.json(produto);
+    return res.status(200).json(produto);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Erro ao atualizar produto.' });
