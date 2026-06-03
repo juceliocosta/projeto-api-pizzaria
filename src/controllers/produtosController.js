@@ -24,10 +24,8 @@ const obterProdutos = async (req, res) => {
 const obterProdutoPorID = async (req, res) => {
   try {
     const { id } = req.params;
-    const produto = await Produto.findByPk(id);
-    if (!produto) {
-      return res.status(404).json({ error: 'Produto não encontrado.' });
-    }
+    const produto = await Produto.findOne({ where: { id }});
+    
     return res.json(produto);
   } catch (error) {
     console.error(error);
