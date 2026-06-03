@@ -21,8 +21,8 @@ async function criarAdminInicial(Usuario) {
     console.log('Admin inicial criado com sucesso!');
   } else {
     const password = await bcrypt.hash(adminPassword, 10);
-    await admin.update({ senha: password });
-    console.log('Admin inicial já existe. Senha atualizada com sucesso!');
+    await admin.update({ email: adminEmail,senha: password });
+    console.log('Admin inicial já existe. Email e Senha atualizados com sucesso!');
   }
 }
 
