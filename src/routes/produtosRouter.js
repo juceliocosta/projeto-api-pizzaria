@@ -6,6 +6,7 @@ const { isAdmin } = require('../middlewares/isAdmin');
 
 produtosRoutes.get('/', produtos.obterProdutos);
 produtosRoutes.post('/', autenticarJWT, isAdmin, produtos.criarProduto);
+produtosRoutes.get('/:id', produtos.obterProdutoPorID);
 produtosRoutes.put('/:id', autenticarJWT, isAdmin, produtos.atualizarProdutoPorID);
 produtosRoutes.delete('/:id', autenticarJWT, isAdmin, produtos.deletarProdutoPorID);
 

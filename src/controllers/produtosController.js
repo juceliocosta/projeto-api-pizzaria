@@ -21,6 +21,20 @@ const obterProdutos = async (req, res) => {
   }
 };
 
+const obterProdutoPorID = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const produto = await Produto.findByPk(id);
+    if (!produto) {
+      return res.status(404).json({ error: 'Produto não encontrado.' });
+    }
+    return res.json(produto);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro ao obter produto do banco de dados.' });
+  }
+};
+
 const atualizarProdutoPorID = async (req, res) => {
   try {
     const { id } = req.params;
@@ -55,6 +69,7 @@ const deletarProdutoPorID = async (req, res) => {
 
 module.exports = {
   obterProdutos,
+  obterProdutoPorID,
   criarProduto,
   atualizarProdutoPorID,
   deletarProdutoPorID
