@@ -128,7 +128,8 @@ const logarUsuario = async (req, res) => {
       usuario: {
         id: usuario.id,
         nome: usuario.nome,
-        email: usuario.email
+        email: usuario.email,
+        tipo_usuario: usuario.tipo_usuario
       }
     });
 
