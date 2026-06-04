@@ -39,7 +39,7 @@ const obterUsuarios = async (req, res) => {
       const { senha, ...usuarioSemSenha } = usuario.toJSON();
       return usuarioSemSenha;
     });
-    return res.json(usuariosSemSenha);
+    return res.status(200).json(usuariosSemSenha);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Erro ao obter usuários do banco de dados.' });
@@ -61,7 +61,7 @@ const atualizarUsuarioPorID = async (req, res) => {
     
     await usuario.update({ nome, email, senha: senhaCriptografada, endereco });
     const { senha: _, ...usuarioSemSenha } = usuario.toJSON();
-    return res.json(usuarioSemSenha);
+    return res.status(200).json(usuarioSemSenha);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Erro ao atualizar usuário.' });

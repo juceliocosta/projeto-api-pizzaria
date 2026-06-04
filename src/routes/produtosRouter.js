@@ -47,7 +47,7 @@ produtosRoutes.get('/', produtos.obterProdutos);
  * @swagger
  * /produtos:
  *  post:
- *     summary: Cria um novo produto
+ *     summary: Registra um novo produto
  *     tags: [Produtos]
  *     security:
  *       - bearerAuth: []
