@@ -63,7 +63,7 @@ const obterPedidoDoUsuario = async (req, res) => {
     pedido.valor_total = valor_total;
     await pedido.save();
 
-    return res.json(pedido);
+    return res.status(200).json(pedido);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Erro ao obter pedido do banco de dados.' });
@@ -73,7 +73,7 @@ const obterPedidoDoUsuario = async (req, res) => {
 const obterPedidos = async (req, res) => {
   try {
     const pedidos = await Pedido.findAll();
-    return res.json(pedidos);
+    return res.status(200).json(pedidos);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Erro ao obter pedidos do banco de dados.' });
@@ -89,7 +89,7 @@ const atualizarPedidoPorID = async (req, res) => {
       return res.status(404).json({ error: 'Pedido não encontrado.' });
     }
     await pedido.update({ status_entrega, status_pagamento, valor_total, observacao });
-    return res.json(pedido);
+    return res.status(200).json(pedido);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Erro ao atualizar pedido.' });

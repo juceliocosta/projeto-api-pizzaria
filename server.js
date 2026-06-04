@@ -29,5 +29,5 @@ app.use(routes);
 (async () => {
   await sequelize.sync();
   await criarAdminInicial(Usuario);
-  app.listen(PORT, () => console.log('Servidor rodando na porta ${PORT}'));
+  app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
 })();

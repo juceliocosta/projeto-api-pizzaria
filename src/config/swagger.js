@@ -24,12 +24,16 @@ const options = {
     },
     tags: [
       {
-        name: 'Pizzaria',
-        description: 'Gestão de pizzaria',
+        name: 'Usuários',
+        description: 'Login e registro de usuários',
       },
       {
-        name: 'Autenticação',
-        description: 'Login e registro de usuários',
+        name: 'Produtos',
+        description: 'Gestão de produtos',
+      },
+            {
+        name: 'Pedidos',
+        description: 'Gestão de pedidos',
       },
     ],
   },

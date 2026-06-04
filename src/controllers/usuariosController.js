@@ -6,7 +6,7 @@ const criarUsuario = async (req, res) => {
 try {
   const { nome, email, senha, endereco } = req.body;
   if (!nome || !email || !senha) {
-    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+    return res.status(400).json({ error: 'Nome, Email e Senha são obrigatórios.' });
   }
 
   // Verifica se o e-mail já está cadastrado
