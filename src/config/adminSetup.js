@@ -5,7 +5,7 @@ async function criarAdminInicial(Usuario) {
   const adminPassword = process.env.ADMIN_PASSWORD;
   
   // Verifica se o admin já existe
-  const admin = await Usuario.findOne({ where: { email: adminEmail } });
+  const admin = await Usuario.findOne({ where: { tipo_usuario: 'Admin' } });
 
   if (!admin) {
     const password = await bcrypt.hash(adminPassword, 10);
