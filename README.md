@@ -39,6 +39,7 @@ API desenvolvida para gerenciar uma pizzaria, permitindo o cadastro de usuários
 ### Produtos 
 - `POST /produtos` — Cadastrar novo produto
 - `GET /produtos` — Listar produtos
+- `GET /produtos/:id` — Retorna um produto
 - `PUT /produtos/:id` — Atualizar produto
 - `DELETE /produtos/:id` — Remover produto
 
