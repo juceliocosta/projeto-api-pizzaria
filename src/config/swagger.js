@@ -10,7 +10,8 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'https://projeto-api-pizzaria.onrender.com',
+        description: 'Servidor em produção'
       },
     ],
     components: {
